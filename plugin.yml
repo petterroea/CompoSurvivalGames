@@ -1,0 +1,21 @@
+name: CompoSurvivalGames
+version: 1.4.1
+description: Yolo
+main: com.petterroea.survival.proper.SurvivalGamesMain
+ 
+commands:
+    reset:
+        description: Reset the game
+        usage: /reset
+    start:
+        description: Start the game
+        usage: /start
+    point:
+        description: Point!
+        usage: /point
+    deathmatch:
+        description: Start a deathmatch!
+        usage: /deathmatch
+    clean:
+        description: Spring cleaning!
+        usage: /clean
