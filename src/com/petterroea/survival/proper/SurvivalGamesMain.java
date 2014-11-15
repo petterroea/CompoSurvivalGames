@@ -51,6 +51,7 @@ public class SurvivalGamesMain extends JavaPlugin implements Listener{
 	private File userScoreLocation = new File("scores.json");
 	private File spotLocation = new File("spots.json");
 	private File jsonJarLocation = new File("survival/javax.json-1.0.4.jar");
+	private int minNumPlayers = 10;
 	//VARIABLES
 	private JSONArray userScores = null;
 	private JSONArray mapSpots = null;
@@ -217,6 +218,8 @@ public class SurvivalGamesMain extends JavaPlugin implements Listener{
 				}
 				p.kickPlayer("You won!");
 				getServer().broadcastMessage(ChatColor.GREEN + p.getName() + " WON!");
+				stateHandler.reset();
+				resetChestsAndItems();
 			}
 		} else {
 			freeSpot(event.getPlayer());
@@ -284,8 +287,8 @@ public class SurvivalGamesMain extends JavaPlugin implements Listener{
 	}
 	@EventHandler(priority=EventPriority.HIGH)
 	public void playerJoin(PlayerJoinEvent event) {
-		if(isPetterroea(event.getPlayer())) {
-			System.out.println("ITS PETTERREOA!!1");
+		if(event.getPlayer().isOp()) {
+			//System.out.println("ITS PETTERREOA!!1");
 			for(Player player : getServer().getOnlinePlayers()) {
 				player.hidePlayer(event.getPlayer());
 			}
@@ -306,6 +309,14 @@ public class SurvivalGamesMain extends JavaPlugin implements Listener{
 				System.out.println("Spawning player at " + loc.toString());
 				
 				event.getPlayer().teleport(loc);
+			}
+			if(!stateHandler.isCountingDown() && !stateHandler.hasGameStarted()) {
+				if(getPlayersLeft() >= minNumPlayers) {
+					getServer().broadcastMessage(ChatColor.RED + "We have enough players. The game will start in 60 seconds");
+					stateHandler.startGameIn(60);
+				} else {
+					getServer().broadcastMessage(ChatColor.BLUE + "We need " + (minNumPlayers-getPlayersLeft()) + " more players to start");
+				}
 			}
 		}
 	}
@@ -422,9 +433,11 @@ public class SurvivalGamesMain extends JavaPlugin implements Listener{
 		}
 		saveData();
 	}
+	//Temp fixed
 	public boolean isPetterroea(Player p) {
 		//return false;
-		return p.getUniqueId().toString().equals("c59b89a2-f8f4-4c1e-a154-c72874a67e30");
+		return p.isOp();
+		//return p.getUniqueId().toString().equals("c59b89a2-f8f4-4c1e-a154-c72874a67e30");
 	}
 	public boolean isTrackingPlayer(Player p) {
 		for(int i = 0; i < userScores.length(); i++) {
